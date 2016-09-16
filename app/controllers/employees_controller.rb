@@ -3,25 +3,27 @@ class EmployeesController < ApplicationController
 
   def managers
     if params[:order] == 'employees'
-      @managers = Employee.find_by_sql("SELECT first_name, last_name, COUNT(*) AS employees_number 
-                                            FROM employees
-                                            WHERE manager_id IS NOT NULL 
-                                            GROUP BY manager_id 
-                                            ORDER BY employees_number")
+      @managers = Employee.find_by_sql("SELECT a.first_name || ' ' || a.last_name AS boss, 
+                                              COUNT(b.first_name || ' ' || b.last_name) AS number_of_employees 
+                                        FROM employees a 
+                                        JOIN employees b 
+                                        ON a.id = b.manager_id
+                                        GROUP BY boss
+                                        ORDER BY number_of_employees DESC")
     else
-      @managers = Employee.select(:first_name, :last_name).where(manager_id: nil)
+      @managers = Employee.select("first_name || ' ' ||last_name AS full_name").where(id: Employee.all.pluck(:manager_id).uniq.compact)
     end
     render json: @managers
   end
 
   def young_managers
-    @managers = Employee.where(manager_id: nil).order(:age).limit(3)
+    @managers = Employee.select("first_name || ' ' ||last_name AS full_name, age").where(id: Employee.all.pluck(:manager_id).uniq.compact).order(:age).limit(3)
     render json: @managers
   end
 
 
 
-
+ 
 
 
 
