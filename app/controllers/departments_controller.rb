@@ -12,7 +12,7 @@ class DepartmentsController < ApplicationController
   end
 
   def at_least_one_managers
-    manager_ids = Employee.all.pluck(:manager_id).uniq.compact
+    manager_ids = Employee.pluck(:manager_id).uniq.compact
     @managers = Employee.find(manager_ids)
     department_ids = @managers.pluck(:department_id).uniq
     @departments = Department.select(:name).where(id: department_ids)

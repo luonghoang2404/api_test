@@ -10,14 +10,19 @@ class EmployeesController < ApplicationController
                                         ON a.id = b.manager_id
                                         GROUP BY boss
                                         ORDER BY number_of_employees DESC")
+
+        
     else
-      @managers = Employee.select("first_name || ' ' ||last_name AS full_name").where(id: Employee.all.pluck(:manager_id).uniq.compact)
+      @managers = Employee.select("first_name || ' ' ||last_name AS full_name").where(id: Employee.pluck(:manager_id).uniq.compact)
     end
     render json: @managers
   end
 
+
+
+
   def young_managers
-    @managers = Employee.select("first_name || ' ' ||last_name AS full_name, age").where(id: Employee.all.pluck(:manager_id).uniq.compact).order(:age).limit(3)
+    @managers = Employee.select("first_name || ' ' ||last_name AS full_name, age").where(id: Employee.pluck(:manager_id).uniq.compact).order(:age).limit(3)
     render json: @managers
   end
 
